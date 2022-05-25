@@ -91,11 +91,11 @@ class Player {
             actualTargetLocation.y -= HALF_TILE_HEIGHT;
             if (isInsideTileBox(this.aimingLocation, actualTargetLocation)) {
                 if (this.weapons[0].ammo > 0) {
-                    let accuracyRand = Math.random() < 0.4;
-                    let accuracyOffsetX = accuracyRand < 0.1 ? (11 - this.stats.accuracy) * 2 : 0;
-                    accuracyOffsetX = accuracyRand > 0.1 && accuracyRand < 0.2 ? (11 - this.stats.accuracy) * -2 : 0;
-                    let accuracyOffsetY = accuracyRand > 0.2 && accuracyRand < 0.3 ? (11 - this.stats.accuracy) * 2 : 0;
-                    accuracyOffsetY = accuracyRand > 0.3 && accuracyRand < 0.4 ? (11 - this.stats.accuracy) * -2 : 0;
+                    let accuracyRand = Math.random();
+                    let accuracyOffsetX = accuracyRand < 0.1 ? (11 - this.stats.accuracy) * 3 : 0;
+                    accuracyOffsetX = accuracyRand > 0.1 && accuracyRand < 0.2 ? (11 - this.stats.accuracy) * -3 : 0;
+                    let accuracyOffsetY = accuracyRand > 0.2 && accuracyRand < 0.3 ? (11 - this.stats.accuracy) * 3 : 0;
+                    accuracyOffsetY = accuracyRand > 0.3 && accuracyRand < 0.4 ? (11 - this.stats.accuracy) * -3 : 0;
                     actualTargetLocation.x += accuracyOffsetX;
                     actualTargetLocation.y += accuracyOffsetY;
                     let newProjectile = this.weapons[0].shoot(angleFormula(this.location, actualTargetLocation), this);
