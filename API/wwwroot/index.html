@@ -65,7 +65,7 @@
         <div id="regForm" class="regForm">
           <form>
             <input id="regEmail" type="email" placeholder="EMAIL"/>
-            <input id="regUsername" type="username" placeholder="USERNAME"/>
+            <input id="regUsername" type="username" maxlength="12" placeholder="USERNAME"/>
             <input id="regPassword" type="password" placeholder="PASSWORD"/>
             <div class="row">
               <button id="sbmtBtn" type="submit" class="register">SUBMIT</button>
@@ -82,9 +82,45 @@
             <canvas id="scene"></canvas>
           </td>
           <td id="disctd">
-            <ul id="discussion" style="list-style-type:none;">
+            <ul id="discussion" style="list-style-type:none;overflow: auto">
               <li>
-                Press Enter to talk in chat!
+                <p>&nbsp;</p>
+                <div id="maincontent">
+                <div id="outputFigDisplay" class="fig">
+                <pre id="taag_output_text" class="fig">     
+                   ____    ____                                 
+                  /  _/___/ / /__                               
+                  / // __  / / _ \                              
+                _/ // /_/ / /  __/                              
+               /___/\__,_/_/\___/                               
+                 / ___/____  ____ _________                     
+                 \__ \/ __ \/ __ `/ ___/ _ \                    
+                ___/ / /_/ / /_/ / /__/  __/                    
+               /____/ .___/\__,_/\___/\___/                     
+                  _/_/____          ___       __                
+                 / ____/ /___ _____/ (_)___ _/ /_____  _____    
+                / / __/ / __ `/ __  / / __ `/ __/ __ \/ ___/    
+               / /_/ / / /_/ / /_/ / / /_/ / /_/ /_/ / /        
+               \____/_/\__,_/\__,_/_/\__,_/\__/\____/_/         
+                 / ___/(_)___ ___  __  __/ /___ _/ /_____  _____
+                 \__ \/ / __ `__ \/ / / / / __ `/ __/ __ \/ ___/
+                ___/ / / / / / / / /_/ / / /_/ / /_/ /_/ / /    
+               /____/_/_/ /_/ /_/\__,_/_/\__,_/\__/\____/_/     
+                                                                </pre>
+                <p>&nbsp;</p>
+                <div>&nbsp;</div>
+                </div>
+                </div>
+                Welcome to the Idle Space Gladiator Simulator console. <br/>
+                <br/>
+                This game was created for WonderJam - Idle from 05/20/2022 to 05/30/2022.  Thank you for playing.<br/>
+                <br/>
+                Current prices:<br/>
+                Guns: 50 bucks...<br/>
+                Ammo: 10 bucks...<br/>
+                Advance Neural Implants by battling in the arena...<br/>
+                <br/>
+                Press Enter to talk in global chat.<br/>
               </li>
             </ul>
             <input id="chatbox" />
@@ -121,6 +157,8 @@
     // Get the button that opens the modal
     var regBtn = document.getElementById("regBtn");
     var cnclBtn = document.getElementById("cnclBtn");
+
+    var discussion = document.getElementById("discussion");
 
     var userData = undefined;
 
@@ -222,6 +260,8 @@
       }
       cvs.style.width = width + "px";
       cvs.style.height = width / aspectRatio + "px";
+
+      discussion.style.height = (window.innerHeight - 50) + "px";
       
       menu = new Menu(userData, identity, logoutCallback);
       gameTimer = window.setInterval((menu) => {
@@ -251,6 +291,9 @@
       }
       cvs.style.width = width + "px";
       cvs.style.height = width / aspectRatio + "px";
+
+      discussion.style.height = (window.innerHeight - 50) + "px";
+      discussion.scrollTop = discussion.scrollHeight;
     };
 
     document.addEventListener('keyup', function (event) {

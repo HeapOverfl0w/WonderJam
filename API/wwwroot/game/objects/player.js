@@ -91,6 +91,13 @@ class Player {
             actualTargetLocation.y -= HALF_TILE_HEIGHT;
             if (isInsideTileBox(this.aimingLocation, actualTargetLocation)) {
                 if (this.weapons[0].ammo > 0) {
+                    let accuracyRand = Math.random() < 0.4;
+                    let accuracyOffsetX = accuracyRand < 0.1 ? (11 - this.stats.accuracy) * 2 : 0;
+                    accuracyOffsetX = accuracyRand > 0.1 && accuracyRand < 0.2 ? (11 - this.stats.accuracy) * -2 : 0;
+                    let accuracyOffsetY = accuracyRand > 0.2 && accuracyRand < 0.3 ? (11 - this.stats.accuracy) * 2 : 0;
+                    accuracyOffsetY = accuracyRand > 0.3 && accuracyRand < 0.4 ? (11 - this.stats.accuracy) * -2 : 0;
+                    actualTargetLocation.x += accuracyOffsetX;
+                    actualTargetLocation.y += accuracyOffsetY;
                     let newProjectile = this.weapons[0].shoot(angleFormula(this.location, actualTargetLocation), this);
                     if (newProjectile) {
                         //shooting animation
@@ -109,8 +116,8 @@ class Player {
                     let newAimingLocation = this.aimingLocation.copy();
                     //skew for accuracy mess up
                     let aimTowards = new Vector2D(
-                        this.targetPlayer.location.x + (Math.random() - 0.5) * (10 - this.stats.accuracy) * TILE_WIDTH,
-                        this.targetPlayer.location.y + (Math.random() - 0.5) * (10 - this.stats.accuracy) * TILE_HEIGHT);
+                        this.targetPlayer.location.x + (Math.random() - 0.5) * (11 - this.stats.accuracy) * TILE_WIDTH,
+                        this.targetPlayer.location.y + (Math.random() - 0.5) * (11 - this.stats.accuracy) * TILE_HEIGHT);
                     
                     let angle = angleFormula(newAimingLocation, aimTowards);
                     newAimingLocation.x += Math.cos(angle) * (this.stats.reaction / 5 * HALF_TILE_WIDTH);

@@ -107,7 +107,7 @@ class Level {
             }
         } else {
             ctx.fillStyle = "#000000";
-            ctx.fillRect(this.scores.location.x - TILE_WIDTH, this.scores.location.y - TILE_HEIGHT, 140, 150);
+            ctx.fillRect(this.scores.location.x - TILE_WIDTH, this.scores.location.y - TILE_HEIGHT, 150, 150);
             ctx.fillRect(0, 0, TILESX * TILE_WIDTH, 100);
             ctx.fillRect(0, TILESY * TILE_HEIGHT - 100, TILESX * TILE_WIDTH, 100);
             ctx.fillStyle = TEXT_COLOR;

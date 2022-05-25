@@ -47,9 +47,11 @@ class Menu {
             node.appendChild(textnode);
 
             var discussion = document.getElementById("discussion");
-            if (discussion.children.length > 20)
+            if (discussion.children.length > 40)
                 discussion.removeChild(discussion.firstChild);
             discussion.appendChild(node);
+
+            discussion.scrollTop = discussion.scrollHeight;
         });
         this.gameConnect.start().then(() => {
             this.chatEnabled = true;
@@ -112,31 +114,29 @@ class Menu {
         }
 
         if (this.gameData.money > 9) {
-            for (let w = 0; w < this.weapons.length; w++) {
-                //Shotgun
-                if (this.gameData.shotgun) {
-                    this.weapons[0].enableAmmoBuy();
-                }
-                //Assault Rifle
-                if (this.gameData.assaultRifle) {
-                    this.weapons[1].enableAmmoBuy();
-                }
-                //Sniper Rifle
-                if (this.gameData.sniperRifle) {
-                    this.weapons[2].enableAmmoBuy();
-                }
-                //SMG
-                if (this.gameData.smg) {
-                    this.weapons[3].enableAmmoBuy();
-                }
-                //Throwing Knife
-                if (this.gameData.throwingKnife) {
-                    this.weapons[4].enableAmmoBuy();
-                }
-                //Lightning Gun
-                if (this.gameData.lightningGun) {
-                    this.weapons[5].enableAmmoBuy();
-                }
+            //Shotgun
+            if (this.gameData.shotgun) {
+                this.weapons[0].enableAmmoBuy();
+            }
+            //Assault Rifle
+            if (this.gameData.assaultRifle) {
+                this.weapons[1].enableAmmoBuy();
+            }
+            //Sniper Rifle
+            if (this.gameData.sniperRifle) {
+                this.weapons[2].enableAmmoBuy();
+            }
+            //SMG
+            if (this.gameData.smg) {
+                this.weapons[3].enableAmmoBuy();
+            }
+            //Throwing Knife
+            if (this.gameData.throwingKnife) {
+                this.weapons[4].enableAmmoBuy();
+            }
+            //Lightning Gun
+            if (this.gameData.lightningGun) {
+                this.weapons[5].enableAmmoBuy();
             }
         } else {
             for (let w = 0; w < this.weapons.length; w++) {
