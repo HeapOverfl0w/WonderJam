@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="login.css" type="text/css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="./game/style.css">
+  </head>
+  <body>
+    <div style="display:none">
+      <img id="players" src="./game/rsc/players.png" />
+      <img id="projectiles" src="./game/rsc/projectiles.png" />
+      <img id="weapons" src="./game/rsc/weapons.png" />
+      <img id="level1" src="./game/rsc/level1.png" />
+      <img id="level2" src="./game/rsc/level2.png" />
+      <img id="level3" src="./game/rsc/level3.png" />
+      <img id="menuitems" src="./game/rsc/menuitems.png" />
+      <img id="menubackdrop" src="./game/rsc/menubackdrop.png"/>
+      <img id="obstacles" src="./game/rsc/obstacles.png"/>
+      <img id="obstacles" src="./game/rsc/obstacles.png"/>
+      <audio id="eonmusic">
+        <source src="./game/rsc/eon.mp3" type="audio/mp3">
+      </audio>
+      <audio id="darkmusic">
+        <source src="./game/rsc/dark.mp3" type="audio/mp3">
+      </audio>
+      <audio id="death">
+        <source src="./game/rsc/Death.wav" type="audio/wav">
+      </audio>
+      <audio id="reload">
+        <source src="./game/rsc/reload.wav" type="audio/wav">
+      </audio>
+      <audio id="shot">
+        <source src="./game/rsc/shot.wav" type="audio/wav">
+      </audio>
+      <audio id="shotgunfire">
+        <source src="./game/rsc/shotgunfire.wav" type="audio/wav">
+      </audio>
+      <audio id="buzz">
+        <source src="./game/rsc/buzz.ogg" type="audio/ogg">
+      </audio>
+      <audio id="throw">
+        <source src="./game/rsc/throw.wav" type="audio/wav">
+      </audio>
+    </div>
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <h2 class="title">Idle Space Gladiator Simulator</h2>
+        <img class="gameArt" src="banner.png"/>
+        <div class="logoCircle">
+          <img class="logo" src="A_ZX2K.png"/>
+        </div>
+        <div id='lgnForm' style="text-align: center;">
+          <form >
+            <input id="lgnEmail" type="email" placeholder="EMAIL"/>
+            <input id="lgnPassword" type="password" style="margin-bottom: 1rem;" placeholder="PASSWORD"/>
+            <button id="lgnBtn" type="submit" class="login">LOGIN</button>
+          </form>
+          <div class="text">
+            <!--<p style="margin-top: 1rem;"><span>Forgot Login?</span></p>-->
+            <p style="margin-bottom: 1rem;">Don't have an account?  <span id="regBtn">Sign Up</span></p>
+          </div>
+        </div>
+        <div id="regForm" class="regForm">
+          <form>
+            <input id="regEmail" type="email" placeholder="EMAIL"/>
+            <input id="regUsername" type="username" placeholder="USERNAME"/>
+            <input id="regPassword" type="password" placeholder="PASSWORD"/>
+            <div class="row">
+              <button id="sbmtBtn" type="submit" class="register">SUBMIT</button>
+              <button id="cnclBtn" type="button" class="register">CANCEL</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div id="gamePage" class="gamePage">
+      <table>
+        <tr>
+          <td>
+            <canvas id="scene"></canvas>
+          </td>
+          <td id="disctd">
+            <ul id="discussion" style="list-style-type:none;">
+              <li>
+                Press Enter to talk in chat!
+              </li>
+            </ul>
+            <input id="chatbox" />
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+  <script src='./identityagent.js'></script>
+  <script src='./lib/vanilla-toast.min.js'></script>
+  <script src='./lib/signalr.js'></script>
+  <script src="./game/objects/audiohandler.js"></script>
+  <script src="./game/objects/vector2d.js"></script>
+  <script src="./game/objects/projectile.js"></script>
+  <script src="./game/objects/weapon.js"></script>
+  <script src="./game/consts.js"></script>
+  <script src="./game/objects/player.js"></script>
+  <script src="./game/objects/level.js"></script>
+  <script src="./game/objects/game.js"></script>
+  <script src="./game/menu/button.js"></script>
+  <script src="./game/menu/stat.js"></script>
+  <script src="./game/menu/checkbox.js"></script>
+  <script src="./game/menu/score.js"></script>
+  <script src="./game/menu/weapon.js"></script>
+  <script src="./game/menu/menu.js"></script>
+  <script>
+    document.getElementById("chatbox").style.visibility = "hidden";
+    // Get the controls
+    var lgnForm = document.getElementById("lgnForm");
+    var regForm = document.getElementById("regForm");
+    var gamePage = document.getElementById("gamePage");
+    var modal = document.getElementById("myModal");
+
+    // Get the button that opens the modal
+    var regBtn = document.getElementById("regBtn");
+    var cnclBtn = document.getElementById("cnclBtn");
+
+    var userData = undefined;
+
+    var identity = new IdentityAgent();
+    var token = identity.getToken();
+    if (token && token !== 'undefined') {
+      identity.getUserData().then(response => {
+        if (response.status) {
+          identity.clearToken();
+        } else {
+          userData = response;
+          modal.style.display = "none";
+          gamePage.style.display = "block";
+          startGame();
+        }
+      });
+    }
+
+    lgnForm.onsubmit = function() {
+      var email = document.getElementById('lgnEmail').value;
+      var password = document.getElementById('lgnPassword').value;
+      identity.login(email, password).then(response => {
+        if (response.status) {
+          vt.error('Login Attempt Failed: Invalid Email and/or Password');
+        } else {
+          userData = response;
+          identity.setToken(response.token);
+          modal.style.display = "none";
+          gamePage.style.display = "block";
+          startGame();
+          vt.success('Login Succeeded!');
+        }
+      });
+      return false;
+    }
+
+    regForm.onsubmit = function() {
+      var email = document.getElementById('regEmail').value;
+      var username = document.getElementById('regUsername').value;
+      var password = document.getElementById('regPassword').value;
+      identity.register(email, username, password).then(response => {
+        if (response.status) {
+          var message = 'Register Attempt Failed';
+          if (response.errors) {
+            if (response.errors.error) {
+              message += ': ' + response.errors.error[0];
+            }
+          vt.error(message);
+          } else {
+            userData = response;
+            identity.setToken(response.token);
+            modal.style.display = "none";
+            gamePage.style.display = "block";
+            startGame();
+            vt.success('Account Created!');
+          }
+        }
+        else if (response.token) {
+          userData = response;
+          identity.setToken(response.token);
+          modal.style.display = "none";
+          gamePage.style.display = "block";
+          startGame();
+          vt.success('Account Created!');
+        }
+      });
+      return false;
+    }
+    
+    // When the user clicks the button, open the modal 
+    cnclBtn.onclick = function() {
+      lgnForm.style.display = "block";
+      regForm.style.display = "none";
+      gamePage.style.display = "none";
+    }
+    
+    // When the user clicks on <span> (x), close the modal
+    regBtn.onclick = function() {
+      lgnForm.style.display = "none";
+      regForm.style.display = "block";
+      gamePage.style.display = "none";
+    }
+
+    //********  Game Start Code  ***********
+    var cvs = document.getElementById("scene");
+    var ctx = cvs.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
+    var menu;
+    var gameTimer;
+
+    var startGame = function() {
+      cvs.width = TILESX * TILE_WIDTH;
+      cvs.height = TILESY * TILE_HEIGHT;
+
+      let aspectRatio = cvs.width / cvs.height;
+      let width = window.innerWidth;
+      if (window.innerWidth / aspectRatio > window.innerHeight) {
+        width = window.innerHeight * aspectRatio;
+      }
+      cvs.style.width = width + "px";
+      cvs.style.height = width / aspectRatio + "px";
+      
+      menu = new Menu(userData, identity, logoutCallback);
+      gameTimer = window.setInterval((menu) => {
+        if (menu !== undefined) {
+          menu.draw(ctx);
+        }
+      }, 1000/30, menu);
+    }
+
+    var logoutCallback = function() {
+      window.clearInterval(gameTimer);
+      menu.disconnectFromChat();
+      menu = undefined;
+
+      identity.clearToken();
+      lgnForm.style.display = "block";
+      regForm.style.display = "none";
+      gamePage.style.display = "none"; 
+      modal.style.display = "block";  
+    }
+
+    window.onresize = function() {
+      let aspectRatio = cvs.width / cvs.height;
+      let width = window.innerWidth;
+      if (window.innerWidth / aspectRatio > window.innerHeight) {
+        width = window.innerHeight * aspectRatio;
+      }
+      cvs.style.width = width + "px";
+      cvs.style.height = width / aspectRatio + "px";
+    };
+
+    document.addEventListener('keyup', function (event) {
+      if (menu !== undefined)
+        menu.onKeyUp(event.keyCode);
+    });
+
+    cvs.addEventListener('mousemove', function(event){
+        if (menu !== undefined)
+          menu.onMouseOver(new Vector2D(event.clientX / cvs.clientWidth * cvs.width, event.clientY / cvs.clientHeight * cvs.height));
+    });
+
+    cvs.addEventListener('mouseup', function(event){
+        if (menu !== undefined)
+            menu.onMouseClick(new Vector2D(event.clientX / cvs.clientWidth * cvs.width, event.clientY / cvs.clientHeight * cvs.height));
+    });
+  </script>
+</html>

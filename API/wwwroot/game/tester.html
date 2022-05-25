@@ -1,0 +1,63 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="./style.css">
+        <title>Game Tester</title>
+    </head>
+    <body>
+        <canvas id="scene"></canvas>
+        <div style="display:none">
+            <img id="players" src="./rsc/players.png" />
+            <img id="projectiles" src="./rsc/projectiles.png" />
+            <img id="weapons" src="./rsc/weapons.png" />
+            <img id="level1" src="./rsc/level1.png" />
+            <img id="menuitems" src="./rsc/menuitems.png" />
+            <img id="menubackdrop" src="./rsc/menubackdrop.png"/>
+        </div>
+    </body>
+</html>
+<script src="./objects/vector2d.js"></script>
+<script src="./consts.js"></script>
+<script src="./objects/projectile.js"></script>
+<script src="./objects/weapon.js"></script>
+<script src="./objects/player.js"></script>
+<script src="./objects/level.js"></script>
+<script src="./menu/button.js"></script>
+<script src="./menu/stat.js"></script>
+<script src="./menu/checkbox.js"></script>
+<script src="./menu/score.js"></script>
+<script src="./menu/weapon.js"></script>
+<script>
+    var ctx;
+    var cvs = document.getElementById("scene");
+    window.onload = function() {
+        cvs.width = TILESX * TILE_WIDTH;
+        cvs.height = TILESY * TILE_HEIGHT;
+        cvs.style.width = window.innerWidth + "px";
+        cvs.style.height = window.innerHeight + "px";
+        ctx = cvs.getContext("2d");
+        ctx.font = TEXT_FONT;
+        loadDemo();
+    }
+
+    window.onresize = function() {
+        cvs.style.width = window.innerWidth + "px";
+        cvs.style.height = window.innerHeight + "px";
+    };
+
+    const loadDemo = function() {
+        let bullet = new Projectile(new Vector2D(0,0), 20, 10, 0, new Vector2D(0,0));
+        let pistol = new Weapon(new Vector2D(0,0), bullet, 1000, 4000, 6);
+        let player1 = new Player(0, "Player1", PLAYER1_START, new Stats(10,10,10,10,10), [pistol.copy(99999)]);
+        let player2 = new Player(1, "Player2", PLAYER2_START, new Stats(10,10,10,10,10), [pistol.copy(99999)]);
+        let player3 = new Player(2, "Player3", PLAYER3_START, new Stats(10,10,10,10,10), [pistol.copy(99999)]);
+        let player4 = new Player(3, "Player4", PLAYER4_START, new Stats(10,10,10,10,10), [pistol.copy(99999)]);
+        let level = new Level(LEVEL1_IMAGE, createBasicCollisions(), [player1, player2, player3, player4]);
+
+        window.setInterval((level, context) => {
+            if (!level.matchOver) {
+                level.draw(context);
+                level.update();
+            }
+        }, 1000/30, level, ctx);
+    }
+</script>
