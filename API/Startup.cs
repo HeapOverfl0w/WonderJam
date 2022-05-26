@@ -80,7 +80,7 @@ namespace API
             });
             services.AddCors(opt => {
                 opt.AddPolicy("CorsPolicy", policy => {
-                    policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
+                    policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin().SetIsOriginAllowed(origin => true); // allow any origin;
                 });
             });
 
