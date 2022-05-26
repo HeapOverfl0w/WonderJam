@@ -39,7 +39,7 @@ class Menu {
 
         //signalr chat connection
         this.gameConnect = new signalR.HubConnectionBuilder()
-                                    .withUrl(BASE_URL + "/chat")
+                                    .withUrl(BASE_URL + "/chat", { skipNegotiation: true, transport: signalR.HttpTransportType.WebSockets })
                                     .build();
         this.gameConnect.on("ReceiveMessage", (message) => {
             var node = document.createElement("LI");
@@ -53,7 +53,7 @@ class Menu {
 
             discussion.scrollTop = discussion.scrollHeight;
         });
-        this.gameConnect.start().then(() => {
+        this.gameConnect.start({ withCredentials: false }).then(() => {
             this.chatEnabled = true;
             this.sendMessage(this.userName + " joined chat!");
         });
