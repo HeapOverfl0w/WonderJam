@@ -35,39 +35,45 @@ class Menu {
 
         this.update(this.gameData);
 
-        this.chatEnabled = false;
-
-        //signalr chat connection
-        this.gameConnect = new signalR.HubConnectionBuilder()
-                                    .withUrl(BASE_URL + "/chat", { skipNegotiation: true, transport: signalR.HttpTransportType.WebSockets })
-                                    .build();
-        this.gameConnect.on("ReceiveMessage", (message) => {
-            var node = document.createElement("LI");
-            var textnode = document.createTextNode(message);
-            node.appendChild(textnode);
-
-            var discussion = document.getElementById("discussion");
-            if (discussion.children.length > 40)
-                discussion.removeChild(discussion.firstChild);
-            discussion.appendChild(node);
-
-            discussion.scrollTop = discussion.scrollHeight;
-        });
-        this.gameConnect.start({ withCredentials: false }).then(() => {
-            this.chatEnabled = true;
-            this.sendMessage(this.userName + " joined chat!");
-        });
+        this.chatEnabled = true;
+        this.lastText = "";
+        this.chatTimer = undefined;
 
         this.refreshEnabled = true;
     }
 
+    addMessage(text) {
+        this.lastText = text;
+        var node = document.createElement("LI");
+        var textnode = document.createTextNode(text);
+        node.appendChild(textnode);
+
+        var discussion = document.getElementById("discussion");
+        if (discussion.children.length > 40)
+            discussion.removeChild(discussion.firstChild);
+        discussion.appendChild(node);
+
+        discussion.scrollTop = discussion.scrollHeight;
+    }
+
     sendMessage(text) {
-        this.gameConnect.invoke("SendMessage", text);
+        let headers = {};
+
+        if (this.identityAgent && this.identityAgent.token) {
+            headers['Authorization'] = 'Bearer ' + this.identityAgent.token;
+        }
+
+        headers['Content-Type'] = 'application/json';
+        fetch(BASE_URL + '/api/chat/send?text='+text, {
+            method: 'GET',
+            headers: headers
+        })
+        .catch(error => {console.error(error)});
     }
 
     disconnectFromChat() {
-        if (this.gameConnect) {
-            this.gameConnect.stop();
+        if (this.chatTimer) {
+            window.clearInterval(this.chatTimer);
         }
     }
 
@@ -261,6 +267,30 @@ class Menu {
         if (keyCode == 13 && this.chatEnabled) //enter
         {      
             if (chatbox.style.visibility == "hidden") {
+                //first time hitting enter
+                if (this.chatTimer === undefined) {
+                    this.sendMessage(this.userName + " joined chat!");
+                    this.chatTimer = window.setInterval((menu) => {
+                        let headers = {};
+
+                        if (this.identityAgent && this.identityAgent.token) {
+                            headers['Authorization'] = 'Bearer ' + this.identityAgent.token;
+                        }
+
+                        headers['Content-Type'] = 'application/json';
+                        fetch(BASE_URL + '/api/chat/retrieve?lastText=' + menu.lastText, {
+                            method: 'GET',
+                            headers: headers
+                        })
+                        .then(response => response.json())
+                        .then(texts => {
+                            for (let t = 0; t < texts.length; t++) {
+                                menu.addMessage(texts[t]);
+                            }
+                        })
+                        .catch(error => {console.error(error)});
+                    }, 5000, this);
+                }
                 chatbox.style.visibility = "visible";
                 chatbox.removeAttribute("disabled");
                 chatbox.focus();
