@@ -345,7 +345,7 @@ class Menu {
             primaryAmmo = menu.game.level.playersArray[0].weapons[0].ammo;
             secondaryAmmo = menu.game.level.playersArray[0].weapons[1].ammo;
         } else if (menu.game.level.playersArray[0].weapons.length > 1) {
-            if (menu.game.level.playersArray[0].weapons[0].name == primaryGunId)
+            if (menu.game.level.playersArray[0].weapons[0].id == primaryGunId)
                 primaryAmmo = menu.game.level.playersArray[0].weapons[0].ammo;
             else
                 secondaryAmmo = menu.game.level.playersArray[0].weapons[0].ammo;
