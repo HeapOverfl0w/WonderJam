@@ -335,6 +335,7 @@ class Menu {
 
     onEndMatch(menu) {
         GLOBAL_AUDIO_HANDLER.stopMusic();
+        menu.showGame = false;
         //get gun ammo correction responses
         let primaryGunId = menu.game.level.playersArray[0].primaryWeapon;
         let primaryAmmo = 0;
@@ -374,7 +375,6 @@ class Menu {
         .then(response => response.json())
         .then(gameData => {
             menu.update(gameData);
-            menu.showGame = false;
         })
         .catch(error => {console.error(error)});
     }
