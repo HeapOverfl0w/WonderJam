@@ -24,7 +24,7 @@
         <source src="./game/rsc/dark.mp3" type="audio/mp3">
       </audio>
       <audio id="death">
-        <source src="./game/rsc/Death.wav" type="audio/wav">
+        <source src="./game/rsc/death.wav" type="audio/wav">
       </audio>
       <audio id="reload">
         <source src="./game/rsc/reload.wav" type="audio/wav">
@@ -120,10 +120,10 @@
                 Ammo: 10 bucks...<br/>
                 Advance Neural Implants by battling in the arena...<br/>
                 <br/>
-                Press Enter to talk in global chat.<br/>
+                Press Enter to join and talk in global chat.<br/>
               </li>
             </ul>
-            <input id="chatbox" />
+            <input id="chatbox" maxlength="80"/>
           </td>
         </tr>
       </table>
@@ -165,7 +165,7 @@
     var token = identity.getToken();
     if (token && token !== 'undefined') {
       identity.getUserData().then(response => {
-        if (response.status) {
+        if (response.status || response.statusCode) {
           identity.clearToken();
         } else {
           userData = response;
