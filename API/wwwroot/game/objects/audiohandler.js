@@ -22,6 +22,8 @@ class AudioHandler {
         this.buzz.volume = volume;
         this.throw = document.getElementById("throw");
         this.throw.volume = volume;
+        this.laser = document.getElementById("laser");
+        this.laser.volume = volume;
     }
 
     toggleMute() {
@@ -62,6 +64,9 @@ class AudioHandler {
             case "knife":
                 this.playThrow();
                 break;
+            case "laser":
+                this.playLaser();
+                break;
             default:
                 this.playShot();
         }
@@ -95,6 +100,11 @@ class AudioHandler {
     playThrow() {
         this.throw.currentTime = 0;
         this.throw.play();
+    }
+
+    playLaser() {
+        this.laser.currentTime = 0;
+        this.laser.play();
     }
 
     playAudio(src) {

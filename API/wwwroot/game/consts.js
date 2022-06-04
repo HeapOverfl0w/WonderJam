@@ -28,6 +28,7 @@ const MENU_SPRITE_SHEET = document.getElementById('menuitems');
 const LEVEL1_IMAGE = document.getElementById('level1');
 const LEVEL2_IMAGE = document.getElementById('level2');
 const LEVEL3_IMAGE = document.getElementById('level3');
+const LEVEL4_IMAGE = document.getElementById('level4');
 const MENU_BACK_DROP = document.getElementById('menubackdrop');
 const OBSTACLES_SPRITE_SHEET = document.getElementById('obstacles');
 
@@ -36,17 +37,19 @@ const GLOBAL_AUDIO_HANDLER = new AudioHandler();
 //weapons
 let PISTOL_BULLET = new Projectile(new Vector2D(0,0), 20, 10, 0, new Vector2D(0,0));
 let SHOTGUN_BULLET = new Projectile(new Vector2D(16,0), 60, 5, 0, new Vector2D(0,0));
-let SNIPER_BULLET = new Projectile(new Vector2D(32,0), 60, 15, 0, new Vector2D(0,0));
+let SNIPER_BULLET = new Projectile(new Vector2D(32,0), 60, 17, 0, new Vector2D(0,0));
 let SMG_BULLET = new Projectile(new Vector2D(0,0), 10, 10, 0, new Vector2D(0,0));
 let KNIFE_BULLET = new Projectile(new Vector2D(48,0), 110, 2.5, 0, new Vector2D(0,0));
 let LIGHTNING_BULLET = new Projectile(new Vector2D(64,0), 5, 5, 0, new Vector2D(0,0));
+let LASER_BULLET = new Projectile(new Vector2D(80,0), 30, 14, 0, new Vector2D(0,0));
 let PISTOL = new Weapon("pistol", new Vector2D(0,0), new Vector2D(15,16), PISTOL_BULLET, 1000, 4000, 6);
-let SHOTGUN = new Weapon("shotgun", new Vector2D(16,0), new Vector2D(31,16), SHOTGUN_BULLET, 1500, 3000, 2);
+let SHOTGUN = new Weapon("shotgun", new Vector2D(16,0), new Vector2D(31,16), SHOTGUN_BULLET, 1250, 3000, 2);
 let ASSAULT_RIFLE = new Weapon("assault", new Vector2D(48,0), new Vector2D(31,16), PISTOL_BULLET, 300, 6000, 20);
 let SNIPER_RIFLE = new Weapon("sniper", new Vector2D(80,0), new Vector2D(31,16), SNIPER_BULLET, 2000, 7000, 4);
-let SMG = new Weapon("smg", new Vector2D(112,0), new Vector2D(27,16), SMG_BULLET, 150, 4000, 20);
+let SMG = new Weapon("smg", new Vector2D(112,0), new Vector2D(27,16), SMG_BULLET, 150, 4000, 25);
 let KNIFE = new Weapon("knife", new Vector2D(144,0), new Vector2D(15,16), KNIFE_BULLET, 3000, 1000, 10);
-let LIGHTNING_GUN = new Weapon("lightning", new Vector2D(160,0), new Vector2D(31,16), LIGHTNING_BULLET, 50, 6000, 200);
+let LIGHTNING_GUN = new Weapon("lightning", new Vector2D(160,0), new Vector2D(31,16), LIGHTNING_BULLET, 50, 6000, 175);
+let LASER_RIFLE = new Weapon("laser", new Vector2D(192,0), new Vector2D(31,16), LASER_BULLET, 200, 2500, 3);
 
 const getPlayerColor = (playerNumber) => {
     if (playerNumber === 0) {
@@ -136,5 +139,16 @@ const createLevel3Collisions = () => {
     collisionArray[26][12] = false;
     collisionArray[33][17] = false;
     collisionArray[6][28] = false;
+    return collisionArray;
+}
+
+const createLevel4Collisions = () => {
+    let collisionArray = createBasicCollisions();
+    collisionArray[11][12] = false;
+    collisionArray[15][20] = false;
+    collisionArray[12][16] = false;
+    collisionArray[24][12] = false;
+    collisionArray[30][6] = false;
+    collisionArray[27][23] = false;
     return collisionArray;
 }

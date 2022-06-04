@@ -173,6 +173,12 @@ namespace API.Controllers
                         user.GameData.LightningGunAmmo = ammo;
                     }    
                 break;
+                case "laser":
+                    if (user.GameData.LaserRifle)
+                    {
+                        user.GameData.LaserRifleAmmo = ammo;
+                    }    
+                break;
             }
         }
 
@@ -277,6 +283,7 @@ namespace API.Controllers
                         {
                             user.GameData.AssaultRifle = true;
                             user.GameData.Money -= 50;
+                            UpdateAmmoCount(user, gun, 20);
                             await _dataContext.SaveChangesAsync();
                             return Ok(user.GameData);
                         }    
@@ -286,6 +293,7 @@ namespace API.Controllers
                         {
                             user.GameData.SniperRifle = true;
                             user.GameData.Money -= 50;
+                            UpdateAmmoCount(user, gun, 20);
                             await _dataContext.SaveChangesAsync();
                             return Ok(user.GameData);
                         }    
@@ -295,6 +303,7 @@ namespace API.Controllers
                         {
                             user.GameData.Shotgun = true;
                             user.GameData.Money -= 50;
+                            UpdateAmmoCount(user, gun, 20);
                             await _dataContext.SaveChangesAsync();
                             return Ok(user.GameData);
                         }    
@@ -304,6 +313,7 @@ namespace API.Controllers
                         {
                             user.GameData.Smg = true;
                             user.GameData.Money -= 50;
+                            UpdateAmmoCount(user, gun, 20);
                             await _dataContext.SaveChangesAsync();
                             return Ok(user.GameData);
                         }    
@@ -313,6 +323,7 @@ namespace API.Controllers
                         {
                             user.GameData.ThrowingKnife = true;
                             user.GameData.Money -= 50;
+                            UpdateAmmoCount(user, gun, 20);
                             await _dataContext.SaveChangesAsync();
                             return Ok(user.GameData);
                         }    
@@ -322,6 +333,17 @@ namespace API.Controllers
                         {
                             user.GameData.LightningGun = true;
                             user.GameData.Money -= 50;
+                            UpdateAmmoCount(user, gun, 20);
+                            await _dataContext.SaveChangesAsync();
+                            return Ok(user.GameData);
+                        }  
+                    break;
+                    case "laser":
+                        if (!user.GameData.LaserRifle)
+                        {
+                            user.GameData.LaserRifle = true;
+                            user.GameData.Money -= 50;
+                            UpdateAmmoCount(user, gun, 20);
                             await _dataContext.SaveChangesAsync();
                             return Ok(user.GameData);
                         }    
@@ -369,6 +391,11 @@ namespace API.Controllers
                         return Ok(user.GameData);    
                     case "lightning":
                         user.GameData.LightningGunAmmo += 100;
+                        user.GameData.Money -= 10;
+                        await _dataContext.SaveChangesAsync();
+                        return Ok(user.GameData); 
+                    case "laser":
+                        user.GameData.LaserRifleAmmo += 39;
                         user.GameData.Money -= 10;
                         await _dataContext.SaveChangesAsync();
                         return Ok(user.GameData); 

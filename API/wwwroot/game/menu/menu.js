@@ -5,12 +5,13 @@ class Menu {
         this.identityAgent = identityAgent;
         this.logoutCallback = logoutCallback;
         this.weapons = [];
-        this.weapons.push(new WeaponMenu(new Vector2D(70, 60), "Shotgun", this.gameData.shotgunAmmo, this, this.onShotgunAmmoBuyClick, this.onShotgunBuyClick));
-        this.weapons.push(new WeaponMenu(new Vector2D(70, 80), "Assault Rifle", this.gameData.assaultRifleAmmo, this, this.onAssaultRifleAmmoBuyClick, this.onAssaultRifleBuyClick));
-        this.weapons.push(new WeaponMenu(new Vector2D(70, 100), "Sniper Rifle", this.gameData.sniperRifleAmmo, this, this.onSniperRifleAmmoBuyClick, this.onSniperRifleBuyClick));
-        this.weapons.push(new WeaponMenu(new Vector2D(70, 120), "SMG", this.gameData.smgAmmo, this, this.onSmgAmmoBuyClick, this.onSmgBuyClick));
-        this.weapons.push(new WeaponMenu(new Vector2D(70, 140), "Throwing Knife", this.gameData.throwingKnifeAmmo, this, this.onThrowingKnifeAmmoBuyClick, this.onThrowingKnifeBuyClick));
-        this.weapons.push(new WeaponMenu(new Vector2D(70, 160), "Lightning Gun", this.gameData.lightningGunAmmo, this, this.onLightningGunAmmoBuyClick, this.onLightningGunBuyClick));
+        this.weapons.push(new WeaponMenu(new Vector2D(70, 55), "Shotgun", this.gameData.shotgunAmmo, this, this.onShotgunAmmoBuyClick, this.onShotgunBuyClick));
+        this.weapons.push(new WeaponMenu(new Vector2D(70, 75), "Assault Rifle", this.gameData.assaultRifleAmmo, this, this.onAssaultRifleAmmoBuyClick, this.onAssaultRifleBuyClick));
+        this.weapons.push(new WeaponMenu(new Vector2D(70, 95), "Sniper Rifle", this.gameData.sniperRifleAmmo, this, this.onSniperRifleAmmoBuyClick, this.onSniperRifleBuyClick));
+        this.weapons.push(new WeaponMenu(new Vector2D(70, 115), "SMG", this.gameData.smgAmmo, this, this.onSmgAmmoBuyClick, this.onSmgBuyClick));
+        this.weapons.push(new WeaponMenu(new Vector2D(70, 135), "Throwing Knife", this.gameData.throwingKnifeAmmo, this, this.onThrowingKnifeAmmoBuyClick, this.onThrowingKnifeBuyClick));
+        this.weapons.push(new WeaponMenu(new Vector2D(70, 155), "Lightning Gun", this.gameData.lightningGunAmmo, this, this.onLightningGunAmmoBuyClick, this.onLightningGunBuyClick));
+        this.weapons.push(new WeaponMenu(new Vector2D(70, 175), "Laser Rifle", this.gameData.laserRifleAmmo, this, this.onLaserRifleAmmoBuyClick, this.onLaserRifleBuyClick));
 
         this.stats = [];
         this.stats.push(new Stat(new Vector2D(TILESX * TILE_WIDTH - 200, 60), "Reaction", this.gameData.reaction, this, this.onReactionClick));
@@ -40,6 +41,7 @@ class Menu {
         this.chatTimer = undefined;
 
         this.refreshEnabled = true;
+        this.waitForResponse = false;
     }
 
     addMessage(text) {
@@ -113,6 +115,10 @@ class Menu {
             if (!this.gameData.lightningGun) {
                 this.weapons[5].enableBuy();
             }
+            //Laser Rifle
+            if (!this.gameData.laserRifle) {
+                this.weapons[6].enableBuy();
+            }
         } else {
             for (let w = 0; w < this.weapons.length; w++) {
                 this.weapons[w].disableBuy();
@@ -144,6 +150,10 @@ class Menu {
             if (this.gameData.lightningGun) {
                 this.weapons[5].enableAmmoBuy();
             }
+            //Laser Rifle
+            if (this.gameData.laserRifle) {
+                this.weapons[6].enableAmmoBuy();
+            }
         } else {
             for (let w = 0; w < this.weapons.length; w++) {
                 this.weapons[w].disableAmmoBuy();
@@ -158,6 +168,7 @@ class Menu {
         this.weapons[3].ammo = this.gameData.smgAmmo;
         this.weapons[4].ammo = this.gameData.throwingKnifeAmmo;
         this.weapons[5].ammo = this.gameData.lightningGunAmmo;
+        this.weapons[6].ammo = this.gameData.laserRifleAmmo;
     }
 
     enableStats() {
@@ -241,21 +252,26 @@ class Menu {
     }
 
     onMouseClick(mouseLocation) {
-        for (let w = 0; w < this.weapons.length; w++) {
-            this.weapons[w].onClick(mouseLocation);
+        if (!this.waitForResponse) {
+            for (let w = 0; w < this.weapons.length; w++) {
+                this.weapons[w].onClick(mouseLocation);
+            }
+    
+            for (let s = 0; s < this.stats.length; s++) {
+                this.stats[s].onClick(mouseLocation);
+            }
         }
 
-        for (let s = 0; s < this.stats.length; s++) {
-            this.stats[s].onClick(mouseLocation);
+        if (!this.game.isMatchPlaying()) {
+            for (let b = 0; b < this.buttons.length; b++) {
+                this.buttons[b].onClick(mouseLocation);
+            }
         }
 
-        for (let b = 0; b < this.buttons.length; b++) {
-            this.buttons[b].onClick(mouseLocation);
+        if (this.showGame) {
+            this.game.onClick(mouseLocation);
         }
-
-        this.game.onClick(mouseLocation);
-        if (this.refreshEnabled)
-        {
+        if (this.refreshEnabled) {
             this.matchResults.onClick(mouseLocation);
             this.topPlayers.onClick(mouseLocation);
         }
@@ -313,7 +329,7 @@ class Menu {
         } else {
             ctx.drawImage(MENU_BACK_DROP, 0,0);
             ctx.fillStyle = TEXT_COLOR;
-            ctx.fillText(this.userName + " // Cash : " + this.gameData.money + " // Level : " + this.gameData.level, 10, 20);
+            ctx.fillText(this.userName + " // Cash : " + this.gameData.money + " // Level : " + this.gameData.level + " // Wins : " + this.gameData.wins, 10, 20);
             ctx.fillText("Shop", 70, 50);
             ctx.fillText("Top Players by Wins", 254, 50);
             ctx.fillText("Neural Implants", TILESX * TILE_WIDTH - 200, 50);
@@ -434,6 +450,9 @@ class Menu {
         if (gameData.lightningGun && gameData.lightningGunAmmo > 0) {
             availableWeapons.push(LIGHTNING_GUN.copy(gameData.lightningGunAmmo));
         }
+        if (gameData.laserRifle && gameData.laserRifleAmmo > 0) {
+            availableWeapons.push(LASER_RIFLE.copy(gameData.laserRifleAmmo));
+        }
 
         if (availableWeapons.length > 2) {
             //get 2 random guns
@@ -511,6 +530,14 @@ class Menu {
         menu.fetchAmmo("lightning")
     }
 
+    onLaserRifleBuyClick(menu) {
+        menu.fetchGun("laser");
+    }
+
+    onLaserRifleAmmoBuyClick(menu) {
+        menu.fetchAmmo("laser")
+    }
+
     onReactionClick(menu) {
         menu.fetchUpgrade("reaction");
     }
@@ -532,6 +559,7 @@ class Menu {
     }
 
     fetchAmmo(gun) {
+        this.waitForResponse = true;
         let headers = {};
 
         if (this.identityAgent && this.identityAgent.token) {
@@ -544,8 +572,14 @@ class Menu {
             headers: headers
         })
         .then(response => response.json())
-        .then(gameData => {this.update(gameData)})
-        .catch(error => {console.error(error)});
+        .then(gameData => {
+            this.update(gameData);
+            this.waitForResponse = false;
+        })
+        .catch(error => {
+            console.error(error);
+            this.waitForResponse = false;
+        });
     }
 
     fetchMatchResults() {
@@ -583,6 +617,7 @@ class Menu {
     }
 
     fetchGun(gun) {
+        this.waitForResponse = true;
         let headers = {};
 
         if (this.identityAgent && this.identityAgent.token) {
@@ -595,11 +630,18 @@ class Menu {
             headers: headers
         })
         .then(response => response.json())
-        .then(gameData => {this.update(gameData)})
-        .catch(error => {console.error(error)});
+        .then(gameData => {
+            this.update(gameData);
+            this.waitForResponse = false;
+        })
+        .catch(error => {
+            console.error(error);
+            this.waitForResponse = false;
+        });
     }
 
     fetchUpgrade(skill) {
+        this.waitForResponse = true;
         let headers = {};
 
         if (this.identityAgent && this.identityAgent.token) {
@@ -612,7 +654,13 @@ class Menu {
             headers: headers
         })
         .then(response => response.json())
-        .then(gameData => {this.update(gameData)})
-        .catch(error => {console.error(error)});
+        .then(gameData => {
+            this.update(gameData);
+            this.waitForResponse = false;
+        })
+        .catch(error => {
+            console.error(error);
+            this.waitForResponse = false;
+        });
     }
 }

@@ -60,6 +60,8 @@ namespace API
                 });
             services.AddScoped<TokenService>();
 
+            services.AddSingleton<ChatService>();
+
             services.AddSignalR();
         }
 
@@ -80,7 +82,7 @@ namespace API
             });
             services.AddCors(opt => {
                 opt.AddPolicy("CorsPolicy", policy => {
-                    policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin().SetIsOriginAllowed(origin => true); // allow any origin;
+                    policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin().SetIsOriginAllowed(origin => true);; // allow any origin;
                 });
             });
 

@@ -18,6 +18,8 @@ namespace API.Persistence
         public int ThrowingKnifeAmmo {get;set;}
         public bool SniperRifle {get;set;}
         public int SniperRifleAmmo {get;set;}
+        public bool LaserRifle {get;set;}
+        public int LaserRifleAmmo {get;set;}
 
         public bool Smg {get;set;}
         public int SmgAmmo {get;set;}

@@ -49,6 +49,14 @@ class Weapon {
         }, this.reloadRate, this);
     }
 
+    deathReload() {
+        this.isReloading = true;
+        window.setTimeout((weapon) => {
+            weapon.currentMagazine = weapon.magazineSize > weapon.ammo ? weapon.ammo : weapon.magazineSize;
+            weapon.isReloading = false;
+        }, 1000, this);
+    }
+
     copy(ammo) {
         let weapon = new Weapon(this.id, this.imageLocation, this.imageSize, this.projectile, this.fireRate, this.reloadRate, this.magazineSize);
         weapon.ammo = ammo;

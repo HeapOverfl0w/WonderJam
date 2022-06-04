@@ -43,7 +43,7 @@ class Level {
                         player.deaths += 1;
                         player.targetPlayer = undefined;
                         player.location = this.findRandomOpenTile();
-                        player.weapons[0].reload();
+                        player.weapons[0].deathReload();
                         //reset everyone who was targeting killed player
                         for(let p = 0; p < this.playersArray.length; p++) {
                             if (this.playersArray[p].targetPlayer === player) {
