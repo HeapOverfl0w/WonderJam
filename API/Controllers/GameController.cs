@@ -395,7 +395,7 @@ namespace API.Controllers
                         await _dataContext.SaveChangesAsync();
                         return Ok(user.GameData); 
                     case "laser":
-                        user.GameData.LaserRifleAmmo += 39;
+                        user.GameData.LaserRifleAmmo += 30;
                         user.GameData.Money -= 10;
                         await _dataContext.SaveChangesAsync();
                         return Ok(user.GameData); 
