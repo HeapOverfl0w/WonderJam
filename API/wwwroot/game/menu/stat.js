@@ -13,7 +13,9 @@ class Stat {
     }
 
     onClick(mouseLocation) {
-        this.upgradeButton.onClick(mouseLocation);
+        if (this.level < 11 && this.enabled) {
+            this.upgradeButton.onClick(mouseLocation);
+        }
     }
 
     enableUpgrade() {

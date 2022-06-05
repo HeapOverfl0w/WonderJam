@@ -91,18 +91,29 @@ class TopPlayers {
         buttonLocation.y -= 20;
         buttonLocation.x += 100;
         this.refreshButton = new Button(new Vector2D(32, 0), new Vector2D(48, 0), buttonLocation, new Vector2D(16,16), menu, onClickCallback);
+        buttonLocation = this.location.copy();
+        buttonLocation.y += 110;
+        buttonLocation.x += 30;
+        this.swapButton = new Button(new Vector2D(176,64), new Vector2D(224,64), buttonLocation, new Vector2D(48,16), this, this.onSwapCallback);
+        this.swapFlag = false;
     }
 
     onMouseOver(mouseLocation) {
         if (this.topPlayers !== undefined) {
             this.refreshButton.onMouseOver(mouseLocation);
+            this.swapButton.onMouseOver(mouseLocation);
         }
     }
 
     onClick(mouseLocation) {
         if (this.topPlayers !== undefined) {
             this.refreshButton.onClick(mouseLocation);
+            this.swapButton.onClick(mouseLocation);
         }
+    }
+
+    onSwapCallback(topPlayersControl) {
+        topPlayersControl.swapFlag = !topPlayersControl.swapFlag;
     }
 
     update(topPlayers) {
@@ -112,11 +123,25 @@ class TopPlayers {
     draw(ctx) {
         if (this.topPlayers !== undefined) {
             ctx.fillStyle = TEXT_COLOR;
+            if (!this.swapFlag) {
+                ctx.fillText("Top Players by Wins", 254, 50);
+            } else {
+                ctx.fillText("Top Ladder by Wins", 254, 50);
+            }
+            var y = 0;
             for (let p = 0; p < this.topPlayers.length; p++) {
-                ctx.fillText(this.topPlayers[p].name + " : " + this.topPlayers[p].wins, this.location.x, this.location.y + p * 20 + 10);
+                if (this.swapFlag && this.topPlayers[p].isLadder) {
+                    ctx.fillText(this.topPlayers[p].name + " : " + this.topPlayers[p].wins, this.location.x, this.location.y + y * 20 + 10);
+                    y++;
+                } else if (!this.swapFlag && !this.topPlayers[p].isLadder) {
+                    ctx.fillText(this.topPlayers[p].name + " : " + this.topPlayers[p].wins, this.location.x, this.location.y + y * 20 + 10);
+                    y++;
+                }
+                
             }
 
             this.refreshButton.draw(ctx);
+            this.swapButton.draw(ctx);
         }        
     }
 }

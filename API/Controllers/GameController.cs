@@ -27,36 +27,68 @@ namespace API.Controllers
 
         [Authorize]
         [HttpGet("combatants")]
-        public async Task<ActionResult<CombatantDto[]>> GetCombatants()
+        public async Task<ActionResult<CombatantDto[]>> GetCombatants([FromQuery]bool isLadder = false)
         {
-            var playerIndices = new List<int>();
-            playerIndices.Add(await GetCombatantIndex(playerIndices));
-            playerIndices.Add(await GetCombatantIndex(playerIndices));
-            playerIndices.Add(await GetCombatantIndex(playerIndices));
-            var playerDatas = new AppUser[] {
-                _userManager.Users.Include(u => u.GameData).Skip(playerIndices[0]).Take(1).First(),
-                _userManager.Users.Include(u => u.GameData).Skip(playerIndices[1]).Take(1).First(),
-                _userManager.Users.Include(u => u.GameData).Skip(playerIndices[2]).Take(1).First()
-            };
-            var returnValue = new CombatantDto[] {
-                new CombatantDto() 
-                {
-                    Name = playerDatas[0].UserName,
-                    GameData = playerDatas[0].GameData
-                },
-                new CombatantDto() 
-                {
-                    Name = playerDatas[1].UserName,
-                    GameData = playerDatas[1].GameData
-                },
-                new CombatantDto() 
-                {
-                    Name = playerDatas[2].UserName,
-                    GameData = playerDatas[2].GameData
-                }
-            };
+            if (!isLadder)
+            {
+                var playerIndices = new List<int>();
+                playerIndices.Add(await GetCombatantIndex(playerIndices));
+                playerIndices.Add(await GetCombatantIndex(playerIndices));
+                playerIndices.Add(await GetCombatantIndex(playerIndices));
+                var playerDatas = new AppUser[] {
+                    _userManager.Users.Include(u => u.GameData).Skip(playerIndices[0]).Take(1).First(),
+                    _userManager.Users.Include(u => u.GameData).Skip(playerIndices[1]).Take(1).First(),
+                    _userManager.Users.Include(u => u.GameData).Skip(playerIndices[2]).Take(1).First()
+                };
+                var returnValue = new CombatantDto[] {
+                    new CombatantDto() 
+                    {
+                        Name = playerDatas[0].UserName,
+                        GameData = playerDatas[0].GameData
+                    },
+                    new CombatantDto() 
+                    {
+                        Name = playerDatas[1].UserName,
+                        GameData = playerDatas[1].GameData
+                    },
+                    new CombatantDto() 
+                    {
+                        Name = playerDatas[2].UserName,
+                        GameData = playerDatas[2].GameData
+                    }
+                };
 
-            return Ok(returnValue);
+                return Ok(returnValue);
+            }
+            else
+            {
+                if (_userManager.Users.Include(user => user.GameData).Where((user) => user.GameData.Level > 49).Count() < 3){
+                    return BadRequest();
+                }
+                var ladderUsers = new List<AppUser>();
+                ladderUsers.Add(await GetLadderCombatant(ladderUsers));
+                ladderUsers.Add(await GetLadderCombatant(ladderUsers));
+                ladderUsers.Add(await GetLadderCombatant(ladderUsers));
+                var returnValue = new CombatantDto[] {
+                    new CombatantDto() 
+                    {
+                        Name = ladderUsers[0].UserName,
+                        GameData = ladderUsers[0].GameData
+                    },
+                    new CombatantDto() 
+                    {
+                        Name = ladderUsers[1].UserName,
+                        GameData = ladderUsers[1].GameData
+                    },
+                    new CombatantDto() 
+                    {
+                        Name = ladderUsers[2].UserName,
+                        GameData = ladderUsers[2].GameData
+                    }
+                };
+
+                return Ok(returnValue);
+            }
         }
 
         private async Task<int> GetCombatantIndex(List<int> playerIndices) 
@@ -72,9 +104,29 @@ namespace API.Controllers
                 return index;
         }
 
+        //Retrieves a random level 50 or above combatant that doesn't exist in the input list.
+        //This is poorly optimized. Needs to be worked on.
+        private async Task<AppUser> GetLadderCombatant(List<AppUser> ladderPlayerData) 
+        {
+            var rand = new Random();
+            var currentUser = await _userManager.FindByEmailAsync(User.FindFirstValue(ClaimTypes.Email));
+            var highLevelUsers = _userManager.Users.Include(user => user.GameData).Where((user) => user.GameData.Level > 49 && user.Id != currentUser.Id);
+            var userCount = highLevelUsers.Count();
+            var highUserIndex = (int)Math.Floor(rand.NextDouble() * userCount);
+            var randomHighUser = highLevelUsers.Skip(highUserIndex).Take(1).First();
+            var isItself = randomHighUser.UserName == currentUser.UserName;
+            if (ladderPlayerData.Any((user) => randomHighUser.UserName == user.UserName) || isItself)
+                return await GetLadderCombatant(ladderPlayerData);
+            else
+                return randomHighUser;
+        }
+
         [Authorize]
         [HttpPost("endmatch")]
-        public async Task<ActionResult<GameData>> EndMatch([FromBody]MatchResultDto[] results, [FromQuery]string primaryWeapon, [FromQuery]string secondaryWeapon, [FromQuery]int primaryAmmo, [FromQuery]int secondaryAmmo)
+        public async Task<ActionResult<GameData>> EndMatch([FromBody]MatchResultDto[] results, 
+        [FromQuery]string primaryWeapon, [FromQuery]string secondaryWeapon, 
+        [FromQuery]int primaryAmmo, [FromQuery]int secondaryAmmo,
+        [FromQuery]bool isLadder = false)
         {
             var currentUser = await _dataContext.Users.Include(user => user.GameData).FirstOrDefaultAsync(user => user.Id == _userManager.GetUserId(User));
             currentUser.GameData.Level += 1;
@@ -87,15 +139,39 @@ namespace API.Controllers
             var winningKillCount = results.Max(result => result.Kills);
             var winner = results.First(result => result.Kills == winningKillCount);
             var user = await _dataContext.Users.Include(user => user.GameData).FirstOrDefaultAsync(user => user.UserName == winner.Name);
-            user.GameData.Money += 20;
-            user.GameData.Wins += 1;
+            //Different payouts for ladder play
+            if (currentUser.UserName == user.UserName && isLadder)
+            {
+                user.GameData.Money += 50;
+            } 
+            else 
+            {
+                user.GameData.Money += 20;
+            }
+            
+            if (isLadder)
+            {
+                user.GameData.LadderWins += 1;
+            }
+            else
+            {
+                user.GameData.Wins += 1;
+            }
 
             for(var i = 0; i < results.Length; i++)
             {
                 if (results[i] != winner)
                 {
                     user = await _dataContext.Users.Include(user => user.GameData).FirstOrDefaultAsync(user => user.UserName == results[i].Name);
-                    user.GameData.Money += 10;
+                    //Payout nothing to current user if they didn't win in a ladder match.
+                    if (currentUser.UserName == user.UserName && isLadder)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        user.GameData.Money += 10;
+                    }
                 }
             }
 
@@ -106,6 +182,7 @@ namespace API.Controllers
                 Deaths = result.Deaths
             });
             await _dataContext.Matches.AddAsync(new Match() {
+                IsLadder = isLadder,
                 Player1Result = matchResults.ElementAt(0),
                 Player2Result = matchResults.ElementAt(1),
                 Player3Result = matchResults.ElementAt(2),
@@ -206,11 +283,17 @@ namespace API.Controllers
         public ActionResult<TopPlayerDto[]> TopPlayers()
         {
             var topPlayers = _dataContext.Users.Include(user => user.GameData).OrderByDescending(user => user.GameData.Wins).Take(5);
+            var topLadderPlayers = _dataContext.Users.Include(user => user.GameData).OrderByDescending(user => user.GameData.LadderWins).Take(5);
             var result = topPlayers.Select((user) => new TopPlayerDto() {
                 Name = user.UserName,
                 Wins = user.GameData.Wins
-            });
-            return Ok(result);
+            }).ToList();
+            result.AddRange(topLadderPlayers.Select((user) => new TopPlayerDto() {
+                Name = user.UserName,
+                Wins = user.GameData.LadderWins,
+                IsLadder = true
+            }));
+            return Ok(result.ToArray());
         }
 
         [Authorize]

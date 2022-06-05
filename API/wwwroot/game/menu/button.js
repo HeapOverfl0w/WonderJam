@@ -20,7 +20,7 @@ class Button {
 
     onClick(mouseLocation) {
         if (isInsideBox(mouseLocation, this.location, this.bottomRightLocation)) {
-            this.onClickCallback(menu);
+            this.onClickCallback(this.menu);
         }
     }
 

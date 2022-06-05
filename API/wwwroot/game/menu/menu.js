@@ -21,15 +21,17 @@ class Menu {
         this.stats.push(new Stat(new Vector2D(TILESX * TILE_WIDTH - 200, 140), "Dodge", this.gameData.dodge, this, this.onDodgeClick));
 
         this.buttons = [];
-        this.buttons.push(new Button(new Vector2D(128, 0), new Vector2D(128, 32), new Vector2D(TILESX * TILE_WIDTH / 2 - 64, TILESY * TILE_HEIGHT - 50), new Vector2D(112, 32), menu, this.onStartMatchClick));
-        this.buttons.push(new Button(new Vector2D(0, 64), new Vector2D(64, 64), new Vector2D(TILESX * TILE_WIDTH - 74, 10), new Vector2D(64, 16), menu, this.logoutCallback));
-        this.muteButton = new Button(new Vector2D(112, 0), new Vector2D(112,16), new Vector2D(TILESX * TILE_WIDTH - 20, TILESY * TILE_HEIGHT - 20), new Vector2D(16,16), menu, this.onMuteClick);
+        this.buttons.push(new Button(new Vector2D(128, 0), new Vector2D(128, 32), new Vector2D(TILESX * TILE_WIDTH / 2 - 64, TILESY * TILE_HEIGHT - 50), new Vector2D(112, 32), this, this.onStartMatchClick));
+        this.buttons.push(new Button(new Vector2D(0, 64), new Vector2D(64, 64), new Vector2D(TILESX * TILE_WIDTH - 74, 10), new Vector2D(64, 16), this, this.logoutCallback));
+        this.muteButton = new Button(new Vector2D(112, 0), new Vector2D(112,16), new Vector2D(TILESX * TILE_WIDTH - 20, TILESY * TILE_HEIGHT - 20), new Vector2D(16,16), this, this.onMuteClick);
 
         this.matchResults = new MatchResults(new Vector2D(10, 200), this, this.onMatchResultsRefresh);
         this.fetchMatchResults();
 
         this.topPlayers = new TopPlayers(new Vector2D(254, 60), this, this.onTopPlayersRefresh);
         this.fetchTopPlayers();
+
+        this.ladderCheckBox = new ImageCheckbox(new Vector2D(144, 64), new Vector2D(160, 64), new Vector2D(TILESX * TILE_WIDTH / 2 - 100, TILESY * TILE_HEIGHT - 70), new Vector2D(10,10), "Ladder Match (Level 50+ Players Only)")
         
         this.game = new Game(this.onEndMatch, this);
         this.showGame = false;
@@ -266,6 +268,10 @@ class Menu {
             for (let b = 0; b < this.buttons.length; b++) {
                 this.buttons[b].onClick(mouseLocation);
             }
+
+            if (this.gameData.level > 49) {
+                this.ladderCheckBox.onClick(mouseLocation);
+            }
         }
 
         if (this.showGame) {
@@ -329,9 +335,12 @@ class Menu {
         } else {
             ctx.drawImage(MENU_BACK_DROP, 0,0);
             ctx.fillStyle = TEXT_COLOR;
-            ctx.fillText(this.userName + " // Cash : " + this.gameData.money + " // Level : " + this.gameData.level + " // Wins : " + this.gameData.wins, 10, 20);
+            var text = this.userName + " // Cash : " + this.gameData.money + " // Level : " + this.gameData.level + " // Wins : " + this.gameData.wins;
+            if (this.gameData.level > 49) {
+                text += " // Ladder Wins : " + this.gameData.ladderWins;
+            } 
+            ctx.fillText(text, 10, 20);
             ctx.fillText("Shop", 70, 50);
-            ctx.fillText("Top Players by Wins", 254, 50);
             ctx.fillText("Neural Implants", TILESX * TILE_WIDTH - 200, 50);
             for (let w = 0; w < this.weapons.length; w++) {
                 this.weapons[w].draw(ctx);
@@ -347,6 +356,10 @@ class Menu {
 
             this.matchResults.draw(ctx);
             this.topPlayers.draw(ctx);
+
+            if (this.gameData.level > 49) {
+                this.ladderCheckBox.draw(ctx);
+            }
         } 
         
         this.muteButton.draw(ctx);
@@ -360,7 +373,7 @@ class Menu {
         }
 
         headers['Content-Type'] = 'application/json';
-        fetch(BASE_URL + '/api/game/combatants', {
+        fetch(BASE_URL + '/api/game/combatants?isLadder=' + menu.ladderCheckBox.checked, {
             method: 'GET',
             headers: headers
         })
@@ -413,7 +426,7 @@ class Menu {
         }
 
         headers['Content-Type'] = 'application/json';
-        fetch(BASE_URL + '/api/game/endmatch?primaryWeapon=' + primaryGunId + '&secondaryWeapon=' + secondaryGunId +'&primaryAmmo=' + primaryAmmo + '&secondaryAmmo=' + secondaryAmmo, {
+        fetch(BASE_URL + '/api/game/endmatch?primaryWeapon=' + primaryGunId + '&secondaryWeapon=' + secondaryGunId +'&primaryAmmo=' + primaryAmmo + '&secondaryAmmo=' + secondaryAmmo + '&isLadder=' + menu.ladderCheckBox.checked, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify(matchResults)

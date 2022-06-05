@@ -10,6 +10,7 @@ class Weapon {
         this.imageSize = imageSize;
         this.imageRenderSize = imageSize.x > 16 ? new Vector2D(this.imageSize.x - 6, this.imageSize.y - 6) : this.imageSize;
         this.isReloading = false;
+        this.reloadTimeout = undefined;
     }
 
     shoot(angle, player) {
@@ -43,17 +44,27 @@ class Weapon {
 
     reload() {
         this.isReloading = true;
-        window.setTimeout((weapon) => {
+        if (this.reloadTimeout) {
+            window.clearTimeout(this.reloadTimeout);
+            this.reloadTimeout = undefined;
+        }
+        this.reloadTimeout = window.setTimeout((weapon) => {
             weapon.currentMagazine = weapon.magazineSize > weapon.ammo ? weapon.ammo : weapon.magazineSize;
             weapon.isReloading = false;
+            weapon.reloadTimeout = undefined;
         }, this.reloadRate, this);
     }
 
     deathReload() {
         this.isReloading = true;
-        window.setTimeout((weapon) => {
+        if (this.reloadTimeout) {
+            window.clearTimeout(this.reloadTimeout);
+            this.reloadTimeout = undefined;
+        }
+        this.reloadTimeout = window.setTimeout((weapon) => {
             weapon.currentMagazine = weapon.magazineSize > weapon.ammo ? weapon.ammo : weapon.magazineSize;
             weapon.isReloading = false;
+            weapon.reloadTimeout = undefined;
         }, 1000, this);
     }
 

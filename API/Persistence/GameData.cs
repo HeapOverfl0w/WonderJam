@@ -27,5 +27,6 @@ namespace API.Persistence
         public int LightningGunAmmo {get;set;}
 
         public int Wins {get;set;}        
+        public int LadderWins {get;set;}
     }
 }

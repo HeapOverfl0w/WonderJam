@@ -12,7 +12,7 @@ const DEFAULT_SPEEDY = TILE_HEIGHT / 4;
 
 const TEXT_FONT = "10px MS Gothic";
 const TEXT_COLOR = "#FFFFFF";
-const BASE_URL = "https://solivern.com"
+const BASE_URL = "http://localhost:5000"
 
 const PLAYER1_START = new Vector2D((BOARD_BORDER + 2) * TILE_WIDTH, (BOARD_BORDER + 2)  * TILE_HEIGHT);
 const PLAYER2_START = new Vector2D((PLAYABLE_TILESX / 3 + BOARD_BORDER + 2) * TILE_WIDTH, (TILESY - BOARD_BORDER - 2) * TILE_HEIGHT);
