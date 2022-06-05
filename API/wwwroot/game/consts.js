@@ -29,6 +29,7 @@ const LEVEL1_IMAGE = document.getElementById('level1');
 const LEVEL2_IMAGE = document.getElementById('level2');
 const LEVEL3_IMAGE = document.getElementById('level3');
 const LEVEL4_IMAGE = document.getElementById('level4');
+const LEVEL5_IMAGE = document.getElementById('level5');
 const MENU_BACK_DROP = document.getElementById('menubackdrop');
 const OBSTACLES_SPRITE_SHEET = document.getElementById('obstacles');
 
@@ -150,5 +151,22 @@ const createLevel4Collisions = () => {
     collisionArray[24][12] = false;
     collisionArray[30][6] = false;
     collisionArray[27][23] = false;
+    return collisionArray;
+}
+
+const createLevel5Collisions = () => {
+    let collisionArray = createBasicCollisions();
+    collisionArray[8][8] = false;
+    collisionArray[8][10] = false;
+    collisionArray[10][8] = false;
+    collisionArray[8][23] = false;
+    collisionArray[10][25] = false;
+    collisionArray[8][25] = false;
+    collisionArray[31][8] = false;
+    collisionArray[33][8] = false;
+    collisionArray[33][10] = false;
+    collisionArray[33][25] = false;
+    collisionArray[33][23] = false;
+    collisionArray[31][25] = false;
     return collisionArray;
 }

@@ -41,7 +41,7 @@ class Match {
         if (this.isLadder) {
             ctx.strokeStyle = '#d7e120';
             ctx.beginPath();
-            ctx.rect(this.location.x - 2, this.location.y - 2, 116, 75);
+            ctx.rect(this.location.x - 20, this.location.y - 2, 148, 76);
             ctx.stroke();
         }
     }
