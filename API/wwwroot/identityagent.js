@@ -1,6 +1,6 @@
 class IdentityAgent {
     constructor() {
-        this.baseUrl = 'http://localhost:5000/api/account/';
+        this.baseUrl = 'https://solivern.com/api/account/';
         //first check if a token is available in local storage
         this.token = this.getToken();
     };
