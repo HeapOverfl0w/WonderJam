@@ -6,7 +6,7 @@ class Level {
         this.projectiles = [];
         this.matchOver = false;
         this.obstacleImageLocation = obstacleImageLocation;
-        this.scores = new Match(playersArray, new Vector2D(10,10));
+        this.scores = new Match(playersArray, false, new Vector2D(10,10));
     }
 
     update() {

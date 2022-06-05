@@ -15,9 +15,10 @@ class Score {
 }
 
 class Match {
-    constructor(players, location) {
+    constructor(players, isLadder, location) {
         this.players = players;
         this.location = location;
+        this.isLadder = isLadder;
 
         this.scores = [];
         for(let p = 0; p < players.length; p++) {
@@ -35,6 +36,13 @@ class Match {
     draw(ctx) {
         for (let s = 0; s < this.scores.length; s++) {
             this.scores[s].draw(ctx);
+        }
+
+        if (this.isLadder) {
+            ctx.strokeStyle = '#d7e120';
+            ctx.beginPath();
+            ctx.rect(this.location.x - 2, this.location.y - 2, 116, 75);
+            ctx.stroke();
         }
     }
 }
@@ -66,7 +74,8 @@ class MatchResults {
             matches[m].player2Result.playerNumber = 1;
             matches[m].player3Result.playerNumber = 2;
             matches[m].player4Result.playerNumber = 3;
-            this.matches.push(new Match([matches[m].player1Result, matches[m].player2Result, matches[m].player3Result, matches[m].player4Result], 
+            this.matches.push(new Match([matches[m].player1Result, matches[m].player2Result, matches[m].player3Result, matches[m].player4Result],
+                matches[m].isLadder, 
                 new Vector2D(this.location.x + (158 * Math.floor(m/2)) + 20,  (m % 2) * 80 + this.location.y + 22)));
         }
     }
