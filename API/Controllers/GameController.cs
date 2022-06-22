@@ -142,11 +142,11 @@ namespace API.Controllers
             //Different payouts for ladder play
             if (currentUser.UserName == user.UserName && isLadder)
             {
-                user.GameData.Money += 50;
+                user.GameData.Money += 70;
             } 
             else 
             {
-                user.GameData.Money += 20;
+                user.GameData.Money += 40;
             }
             
             if (isLadder)
@@ -170,7 +170,7 @@ namespace API.Controllers
                     }
                     else
                     {
-                        user.GameData.Money += 10;
+                        user.GameData.Money += 20;
                     }
                 }
             }
